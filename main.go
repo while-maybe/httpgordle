@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	err := http.ListenAndServe(":8123", handlers.Mux())
+	err := http.ListenAndServe(":8123", handlers.NewRouter())
 	if err != nil {
 		panic(err)
 	}
