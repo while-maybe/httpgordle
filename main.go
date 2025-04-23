@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"httpgordle/internal/handlers"
 	"net/http"
-	"os"
 )
 
 func main() {
-	err := http.ListenAndServe(":8123", nil)
+	err := http.ListenAndServe(":8123", handlers.Mux())
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		panic(err)
 	}
 }
