@@ -3,6 +3,7 @@ package handlers
 import (
 	"httpgordle/internal/api"
 	"httpgordle/internal/handlers/getstatus"
+	"httpgordle/internal/handlers/guess"
 	"httpgordle/internal/handlers/newgame"
 	"net/http"
 )
@@ -15,5 +16,6 @@ func NewRouter() *http.ServeMux {
 	r := http.NewServeMux()
 	r.HandleFunc(http.MethodPost+" "+api.NewGameRoute, newgame.Handle)
 	r.HandleFunc(http.MethodGet+" "+api.GetStatusRoute, getstatus.Handle)
+	r.HandleFunc(http.MethodPut+" "+api.GuessRoute, guess.Handle)
 	return r
 }
