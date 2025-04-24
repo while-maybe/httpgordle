@@ -1,8 +1,13 @@
 package api
 
 const (
+	// GameID is the name of the field that stores the game's identifier.
+	GameID = "id"
+
 	// NewGameRoute is the path to create a new game.
 	NewGameRoute = "/games"
+	// GetStatusRoute is the path to get the status of a game identified by itsid.
+	GetStatusRoute = "/games/{" + GameID + "}"
 )
 
 // GameResponse constains the information about a game.
