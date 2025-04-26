@@ -3,6 +3,7 @@ package getstatus
 import (
 	"encoding/json"
 	"httpgordle/internal/api"
+	"httpgordle/internal/session"
 	"log"
 	"net/http"
 )
@@ -15,9 +16,11 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	}
 	log.Printf("retrieve status of game with id: %v", id)
 
-	apiGame := api.GameResponse{
-		ID: id,
+	game := session.Game{
+		ID: session.GameID(id),
 	}
+
+	apiGame := api.ToGameResponse(game)
 
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(apiGame)
