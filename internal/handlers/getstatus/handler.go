@@ -16,9 +16,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	}
 	log.Printf("retrieve status of game with id: %v", id)
 
-	game := session.Game{
-		ID: session.GameID(id),
-	}
+	game := getGame(id)
 
 	apiGame := api.ToGameResponse(game)
 
@@ -26,5 +24,11 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	err := json.NewEncoder(w).Encode(apiGame)
 	if err != nil {
 		log.Printf("failed to write response: %s", err)
+	}
+}
+
+func getGame(id string) session.Game {
+	return session.Game{
+		ID: session.GameID(id),
 	}
 }
