@@ -19,7 +19,7 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	apiGame := response(game)
+	apiGame := api.ToGameResponse(game)
 
 	err = json.NewEncoder(w).Encode(apiGame)
 	if err != nil {
@@ -29,8 +29,4 @@ func Handle(w http.ResponseWriter, req *http.Request) {
 
 func CreateGame() (session.Game, error) {
 	return session.Game{}, nil
-}
-
-func response(game session.Game) api.GameResponse {
-	return api.GameResponse{}
 }
