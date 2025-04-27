@@ -9,21 +9,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var startingGamesRepo = &GameRepository{
+	storage: map[session.GameID]session.Game{
+		session.GameID("10"): {
+			ID:           session.GameID("10"),
+			AttemptsLeft: 5,
+			Guesses:      []session.Guess{},
+			Status:       session.StatusPlaying,
+		},
+	},
+}
+
 func TestNew(t *testing.T) {
 	want := &GameRepository{
 		storage: map[session.GameID]session.Game{},
 	}
 
-	dontWant := &GameRepository{
-		storage: map[session.GameID]session.Game{
-			session.GameID("10"): {
-				ID:           session.GameID("10"),
-				AttemptsLeft: 5,
-				Guesses:      []session.Guess{},
-				Status:       session.StatusPlaying,
-			},
-		},
-	}
+	dontWant := startingGamesRepo
 
 	got := New()
 
@@ -45,46 +47,19 @@ func TestAdd(t *testing.T) {
 				Guesses:      []session.Guess{},
 				Status:       session.StatusPlaying,
 			},
-			want: &GameRepository{
-				storage: map[session.GameID]session.Game{
-					session.GameID("10"): {
-						ID:           session.GameID("10"),
-						AttemptsLeft: 5,
-						Guesses:      []session.Guess{},
-						Status:       session.StatusPlaying,
-					},
-				},
-			},
-			err: nil,
+			want: startingGamesRepo,
+			err:  nil,
 		},
 		"Existing Element": {
-			starting: &GameRepository{
-				storage: map[session.GameID]session.Game{
-					session.GameID("10"): {
-						ID:           session.GameID("10"),
-						AttemptsLeft: 5,
-						Guesses:      []session.Guess{},
-						Status:       session.StatusPlaying,
-					},
-				},
-			},
+			starting: startingGamesRepo,
 			game: session.Game{
 				ID:           session.GameID("10"),
 				AttemptsLeft: 5,
 				Guesses:      []session.Guess{},
 				Status:       session.StatusPlaying,
 			},
-			want: &GameRepository{
-				storage: map[session.GameID]session.Game{
-					session.GameID("10"): {
-						ID:           session.GameID("10"),
-						AttemptsLeft: 5,
-						Guesses:      []session.Guess{},
-						Status:       session.StatusPlaying,
-					},
-				},
-			},
-			err: ErrConflictingID,
+			want: startingGamesRepo,
+			err:  ErrConflictingID,
 		},
 	}
 
@@ -113,17 +88,8 @@ func TestFind(t *testing.T) {
 		err      error
 	}{
 		"finds existing": {
-			existing: &GameRepository{
-				storage: map[session.GameID]session.Game{
-					session.GameID("10"): {
-						ID:           session.GameID("10"),
-						AttemptsLeft: 5,
-						Guesses:      []session.Guess{},
-						Status:       session.StatusPlaying,
-					},
-				},
-			},
-			ID: session.GameID("10"),
+			existing: startingGamesRepo,
+			ID:       session.GameID("10"),
 			want: session.Game{
 				ID:           session.GameID("10"),
 				AttemptsLeft: 5,
@@ -162,6 +128,61 @@ func TestFind(t *testing.T) {
 				t.Errorf("expected %v, got %v", tc.want, got)
 			}
 
+		})
+	}
+}
+
+func TestUpdate(t *testing.T) {
+	tt := map[string]struct {
+		existing, want *GameRepository
+		game           session.Game
+		err            error
+	}{
+		"update existing": {
+			existing: startingGamesRepo,
+			game: session.Game{
+				ID:           session.GameID("10"),
+				AttemptsLeft: 2,
+				Guesses:      []session.Guess{},
+				Status:       session.StatusPlaying,
+			},
+			want: &GameRepository{
+				storage: map[session.GameID]session.Game{
+					session.GameID("10"): {
+						ID:           session.GameID("10"),
+						AttemptsLeft: 2,
+						Guesses:      []session.Guess{},
+						Status:       session.StatusPlaying,
+					},
+				},
+			},
+			err: nil,
+		},
+		"update missing": {
+			existing: startingGamesRepo,
+			game: session.Game{
+				ID:           session.GameID("20"),
+				AttemptsLeft: 2,
+				Guesses:      []session.Guess{},
+				Status:       session.StatusPlaying,
+			},
+			want: startingGamesRepo,
+			err:  ErrNotFound,
+		},
+	}
+
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := tc.existing
+			err := got.Update(tc.game)
+
+			if !errors.Is(err, tc.err) {
+				t.Errorf("expected error %v, got %v", tc.err, err)
+			}
+
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("expected %v, got %v", tc.want, got)
+			}
 		})
 	}
 }
