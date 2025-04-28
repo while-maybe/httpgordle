@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"httpgordle/internal/session"
 	"log"
+	"sync"
 )
 
 // GameRepository holds all the current games.
 type GameRepository struct {
+	mutex   sync.Mutex
 	storage map[session.GameID]session.Game
 }
 
@@ -20,6 +22,11 @@ func New() *GameRepository {
 
 // Add inserts for the first time a game in memory.
 func (gr *GameRepository) Add(game session.Game) error {
+	log.Printf("Adding a game...")
+
+	gr.mutex.Lock()
+	defer gr.mutex.Unlock()
+
 	_, ok := gr.storage[game.ID]
 	if ok {
 		return fmt.Errorf("%w (%s)", ErrConflictingID, game.ID)
@@ -34,6 +41,9 @@ func (gr *GameRepository) Add(game session.Game) error {
 func (gr *GameRepository) Find(ID session.GameID) (session.Game, error) {
 	log.Printf("Looking for game %s...", ID)
 
+	gr.mutex.Lock()
+	defer gr.mutex.Unlock()
+
 	game, ok := gr.storage[ID]
 	if !ok {
 		return session.Game{}, fmt.Errorf("Can't find game %s: %w", ID, ErrNotFound)
@@ -44,6 +54,9 @@ func (gr *GameRepository) Find(ID session.GameID) (session.Game, error) {
 
 // Update modifies an existing game, errors if it doesn't exist
 func (gr *GameRepository) Update(game session.Game) error {
+	gr.mutex.Lock()
+	defer gr.mutex.Unlock()
+
 	_, ok := gr.storage[game.ID]
 	if !ok {
 		return fmt.Errorf("Can't find game %s: %w", game.ID, ErrNotFound)
