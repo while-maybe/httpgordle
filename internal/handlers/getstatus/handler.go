@@ -8,22 +8,28 @@ import (
 	"net/http"
 )
 
-func Handle(w http.ResponseWriter, req *http.Request) {
-	id := req.PathValue(api.GameID)
-	if id == "" {
-		http.Error(w, "missing GameID", http.StatusBadRequest)
-		return
-	}
-	log.Printf("retrieve status of game with id: %v", id)
+type gameFinder interface {
+	Find(ID session.GameID) (session.Game, error)
+}
 
-	game := getGame(id)
+func Handler(finder gameFinder) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		id := req.PathValue(api.GameID)
+		if id == "" {
+			http.Error(w, "missing GameID", http.StatusBadRequest)
+			return
+		}
+		log.Printf("retrieve status of game with id: %v", id)
 
-	apiGame := api.ToGameResponse(game)
+		game := getGame(id)
 
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(apiGame)
-	if err != nil {
-		log.Printf("failed to write response: %s", err)
+		apiGame := api.ToGameResponse(game)
+
+		w.Header().Set("Content-Type", "application/json")
+		err := json.NewEncoder(w).Encode(apiGame)
+		if err != nil {
+			log.Printf("failed to write response: %s", err)
+		}
 	}
 }
 

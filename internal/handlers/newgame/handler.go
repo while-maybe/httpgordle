@@ -8,25 +8,33 @@ import (
 	"net/http"
 )
 
-func Handle(w http.ResponseWriter, req *http.Request) {
-	game, err := CreateGame()
-	if err != nil {
-		log.Printf("unable to create a new game: %s", err)
-		http.Error(w, "failed to create a new game", http.StatusInternalServerError)
-		return
-	}
+type gameAdder interface {
+	Add(game session.Game) error
+}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+// Handler returns the handler for the game creation endpoint.
+func Handler(adder gameAdder) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		game, err := CreateGame(adder)
 
-	apiGame := api.ToGameResponse(game)
+		if err != nil {
+			log.Printf("unable to create a new game: %s", err)
+			http.Error(w, "failed to create a new game", http.StatusInternalServerError)
+			return
+		}
 
-	err = json.NewEncoder(w).Encode(apiGame)
-	if err != nil {
-		log.Printf("failed to write response: %s", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+
+		apiGame := api.ToGameResponse(game)
+
+		err = json.NewEncoder(w).Encode(apiGame)
+		if err != nil {
+			log.Printf("failed to write response: %s", err)
+		}
 	}
 }
 
-func CreateGame() (session.Game, error) {
+func CreateGame(adder gameAdder) (session.Game, error) {
 	return session.Game{}, nil
 }
