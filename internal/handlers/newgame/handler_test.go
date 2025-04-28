@@ -1,6 +1,7 @@
 package newgame
 
 import (
+	"httpgordle/internal/session"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,13 +10,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type gameAdderStub struct {
+	err error
+}
+
+func (g gameAdderStub) Add(_ session.Game) error {
+	return g.err
+}
+
 func TestHandle(t *testing.T) {
+	handleFunc := Handler(gameAdderStub{})
+
 	req, err := http.NewRequest(http.MethodPost, "/games", nil)
 	require.NoError(t, err)
 
 	recorder := httptest.NewRecorder()
 
-	Handle(recorder, req)
+	handleFunc(recorder, req)
 
 	assert.Equal(t, http.StatusCreated, recorder.Code)
 	assert.Equal(t, "application/json", recorder.Header().Get("Content-Type"))

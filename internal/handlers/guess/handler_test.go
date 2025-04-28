@@ -2,6 +2,7 @@ package guess
 
 import (
 	"httpgordle/internal/api"
+	"httpgordle/internal/session"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -11,7 +12,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type gameGuesserStub struct {
+	game session.Game
+	err  error
+}
+
+func (g gameGuesserStub) Update(game session.Game) error {
+	return g.err
+}
+
+func (g gameGuesserStub) Find(ID session.GameID) (session.Game, error) {
+	return g.game, g.err
+}
+
 func TestHandle(t *testing.T) {
+	handleFunc := Handler(gameGuesserStub{game: session.Game{}, err: nil})
+
 	body := strings.NewReader(`{"guess": "hello"}`)
 	req, err := http.NewRequest(http.MethodPut, "/games/", body)
 	require.NoError(t, err)
@@ -21,7 +37,7 @@ func TestHandle(t *testing.T) {
 
 	recorder := httptest.NewRecorder()
 
-	Handle(recorder, req)
+	handleFunc(recorder, req)
 
 	assert.Equal(t, http.StatusOK, recorder.Code)
 	assert.Equal(t, "application/json", recorder.Header().Get("Content-Type"))
