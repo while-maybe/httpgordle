@@ -21,7 +21,7 @@ func Handler(finder gameFinder) http.HandlerFunc {
 		}
 		log.Printf("retrieve status of game with id: %v", id)
 
-		game := getGame(id)
+		game := getGame(id, finder)
 
 		apiGame := api.ToGameResponse(game)
 
@@ -33,7 +33,7 @@ func Handler(finder gameFinder) http.HandlerFunc {
 	}
 }
 
-func getGame(id string) session.Game {
+func getGame(id string, db gameFinder) session.Game {
 	return session.Game{
 		ID: session.GameID(id),
 	}
