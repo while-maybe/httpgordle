@@ -1,10 +1,14 @@
 package session
 
-import "errors"
+import (
+	"errors"
+	"httpgordle/internal/gordle"
+)
 
 // Game contains the information about a game.
 type Game struct {
 	ID           GameID
+	Gordle       gordle.Game
 	AttemptsLeft byte
 	Guesses      []Guess
 	Status       Status

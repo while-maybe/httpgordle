@@ -14,7 +14,7 @@ type Game struct {
 // New returns a game variable, which can be used to Play!
 func New(solution string) (*Game, error) {
 
-	if len(corpus) == 0 {
+	if len(englishCorpus) == 0 {
 		return nil, ErrEmptyCorpus
 	}
 

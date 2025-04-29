@@ -11,7 +11,7 @@ import (
 const ErrEmptyCorpus = corpusError("corpus is empty")
 
 //go:embed corpus/english.txt
-var corpus string
+var englishCorpus string
 
 // ReadCorpus reads the file located at the given path and returns a list of words.
 func ReadCorpus(path string) ([]string, error) {
