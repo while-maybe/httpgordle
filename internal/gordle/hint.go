@@ -29,9 +29,9 @@ func (h hint) String() string {
 }
 
 // feedback is a list of hints, one per character of the word.
-type feedback []hint
+type Feedback []hint
 
-func (fb feedback) Equal(other feedback) bool {
+func (fb Feedback) Equal(other Feedback) bool {
 	if len(fb) != len(other) || !slices.Equal(fb, other) {
 		return false
 	}
@@ -41,7 +41,7 @@ func (fb feedback) Equal(other feedback) bool {
 
 // StringConcat is a naive implementation to build feedback as a string.
 // It is used only to benchmark it against the strings.Builder version.
-func (fb feedback) StringConcat() string {
+func (fb Feedback) StringConcat() string {
 	var output string
 	for _, h := range fb {
 		output += h.String()
@@ -50,7 +50,7 @@ func (fb feedback) StringConcat() string {
 }
 
 // String implements the Stringer interface for a slice of hints.
-func (fb feedback) String() string {
+func (fb Feedback) String() string {
 	sb := strings.Builder{}
 	for _, h := range fb {
 		sb.WriteString(h.String())
