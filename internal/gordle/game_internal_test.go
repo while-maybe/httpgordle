@@ -3,74 +3,28 @@ package gordle
 import (
 	"errors"
 	"slices"
-	"strings"
 	"testing"
 )
 
-func TestGameAsk(t *testing.T) {
-	tt := map[string]struct {
-		input string
-		want  []rune
-	}{
-		"5 characters in English": {
-			input: "HELLO",
-			want:  []rune("HELLO"),
-		},
-		"5 characters in Arabic": {
-			input: "مرحبا",
-			want:  []rune("مرحبا"),
-		},
-		"5 characters in Japanese": {
-			input: "こんにちは",
-			want:  []rune("こんにちは"),
-		},
-		"3 characters in Japanese": {
-			input: "こんに\nこんにちは",
-			want:  []rune("こんにちは"),
-		},
-	}
-
-	for name, tc := range tt {
-		t.Run(name, func(t *testing.T) {
-			// we're not testing the error so I'll ignore it here
-			g, _ := New(strings.NewReader(tc.input), []string{string(tc.want)}, 0)
-			// g := New(bufio.NewReader(os.Stdin), corpus, maxAttempts)
-
-			got := g.ask()
-			if !slices.Equal(got, tc.want) {
-				t.Errorf("got = %v, want %v", string(got), string(tc.want))
-			}
-		})
-	}
-}
-
 func TestGameValidateGuess(t *testing.T) {
 	tt := map[string]struct {
-		word []rune
+		word string
 		want error
 	}{
 		"nominal": {
-			word: []rune("GUESS"),
+			word: "GUESS",
 			want: nil,
 		},
 		"too short": {
-			word: []rune("HI"),
+			word: "HI",
 			want: ErrInvalidGuessLength,
 		},
 		"too long": {
-			word: []rune("SHOULDFAIL"),
+			word: "SHOULDFAIL",
 			want: ErrInvalidGuessLength,
 		},
 		"empty string": {
-			word: []rune(""),
-			want: ErrInvalidGuessLength,
-		},
-		"empty slice": {
-			word: []rune{},
-			want: ErrInvalidGuessLength,
-		},
-		"nil": {
-			word: nil,
+			word: "",
 			want: ErrInvalidGuessLength,
 		},
 	}
@@ -79,11 +33,11 @@ func TestGameValidateGuess(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			// only the validateGuess is being tested so New take nil/0 args
 			// g := New(nil, "XXXXX", 0)
-			g, _ := New(nil, []string{"XXXXX"}, 0)
+			g, _ := New("XXXXX")
 
 			err := g.validateGuess(tc.word)
 			if !errors.Is(err, tc.want) {
-				t.Errorf("%c, expected %q, got %q", tc.word, tc.want, err)
+				t.Errorf("%s, expected %q, got %q", tc.word, tc.want, err)
 			}
 		})
 	}
