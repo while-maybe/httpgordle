@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const ErrCorpusIsEmpty = corpusError("corpus is empty")
+const ErrEmptyCorpus = corpusError("corpus is empty")
 
 // ReadCorpus reads the file located at the given path and returns a list of words.
 func ReadCorpus(path string) ([]string, error) {
@@ -17,7 +17,7 @@ func ReadCorpus(path string) ([]string, error) {
 	}
 
 	if len(data) == 0 {
-		return nil, ErrCorpusIsEmpty
+		return nil, ErrEmptyCorpus
 	}
 
 	// we expect the corpus to be a line or space-separated list of words

@@ -20,7 +20,7 @@ type Game struct {
 func New(reader io.Reader, corpus []string, maxAttempts int) (*Game, error) {
 
 	if len(corpus) == 0 {
-		return nil, ErrCorpusIsEmpty
+		return nil, ErrEmptyCorpus
 	}
 
 	g := &Game{
@@ -75,13 +75,13 @@ func (g *Game) ask() []rune {
 	}
 }
 
-// errInvalidWordLength is returned when the guess has the wrong number of characters.
-var errInvalidWordLength = fmt.Errorf("invalid guess, word doesn't have the same number of characters as the solution")
+// ErrInvalidGuessLength is returned when the guess has the wrong number of characters.
+const ErrInvalidGuessLength = GameError("invalid guess length")
 
 // validateGuess ensures the guess is valid enough.
 func (g *Game) validateGuess(guess []rune) error {
 	if len(guess) != len(g.solution) {
-		return fmt.Errorf("expected %d, got %d, %w", len(g.solution), len(guess), errInvalidWordLength)
+		return fmt.Errorf("expected %d, got %d, %w", len(g.solution), len(guess), ErrInvalidGuessLength)
 	}
 	return nil
 }
@@ -92,10 +92,10 @@ func splitToUppercaseCharacters(input string) []rune {
 }
 
 // computeFeedback verifies every character of the guess against the solution.
-func computeFeedback(guess, solution []rune) feedback {
+func computeFeedback(guess, solution []rune) Feedback {
 
 	// initialise holders for marks
-	result := make(feedback, len(guess))
+	result := make(Feedback, len(guess))
 	used := make([]bool, len(solution))
 
 	if len(guess) != len(solution) {

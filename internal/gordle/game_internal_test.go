@@ -55,23 +55,23 @@ func TestGameValidateGuess(t *testing.T) {
 		},
 		"too short": {
 			word: []rune("HI"),
-			want: errInvalidWordLength,
+			want: ErrInvalidGuessLength,
 		},
 		"too long": {
 			word: []rune("SHOULDFAIL"),
-			want: errInvalidWordLength,
+			want: ErrInvalidGuessLength,
 		},
 		"empty string": {
 			word: []rune(""),
-			want: errInvalidWordLength,
+			want: ErrInvalidGuessLength,
 		},
 		"empty slice": {
 			word: []rune{},
-			want: errInvalidWordLength,
+			want: ErrInvalidGuessLength,
 		},
 		"nil": {
 			word: nil,
-			want: errInvalidWordLength,
+			want: ErrInvalidGuessLength,
 		},
 	}
 
@@ -127,47 +127,47 @@ func TestComputeFeedback(t *testing.T) {
 	tt := map[string]struct {
 		guess    string
 		solution string
-		fb       feedback
+		fb       Feedback
 	}{
 		"good guess": {
 			solution: "hello",
 			guess:    "hello",
-			fb:       feedback{correctPosition, correctPosition, correctPosition, correctPosition, correctPosition},
+			fb:       Feedback{correctPosition, correctPosition, correctPosition, correctPosition, correctPosition},
 		},
 		"1 wrong char guess": {
 			solution: "hello",
 			guess:    "hlllo",
-			fb:       feedback{correctPosition, absentCharacter, correctPosition, correctPosition, correctPosition},
+			fb:       Feedback{correctPosition, absentCharacter, correctPosition, correctPosition, correctPosition},
 		},
 		"2 wrong char guess": {
 			solution: "hello",
 			guess:    "shall",
-			fb:       feedback{absentCharacter, wrongPosition, absentCharacter, correctPosition, wrongPosition},
+			fb:       Feedback{absentCharacter, wrongPosition, absentCharacter, correctPosition, wrongPosition},
 		},
 		"3 wrong char guess": {
 			solution: "hello",
 			guess:    "shall",
-			fb:       feedback{absentCharacter, wrongPosition, absentCharacter, correctPosition, wrongPosition},
+			fb:       Feedback{absentCharacter, wrongPosition, absentCharacter, correctPosition, wrongPosition},
 		},
 		"4 wrong char guess": {
 			solution: "hello",
 			guess:    "hleol",
-			fb:       feedback{correctPosition, wrongPosition, wrongPosition, wrongPosition, wrongPosition},
+			fb:       Feedback{correctPosition, wrongPosition, wrongPosition, wrongPosition, wrongPosition},
 		},
 		"5 wrong char guess": {
 			solution: "hello",
 			guess:    "lloeh",
-			fb:       feedback{wrongPosition, wrongPosition, wrongPosition, wrongPosition, wrongPosition},
+			fb:       Feedback{wrongPosition, wrongPosition, wrongPosition, wrongPosition, wrongPosition},
 		},
 		"no guess": {
 			solution: "hello",
 			guess:    "xxxxx",
-			fb:       feedback{absentCharacter, absentCharacter, absentCharacter, absentCharacter, absentCharacter},
+			fb:       Feedback{absentCharacter, absentCharacter, absentCharacter, absentCharacter, absentCharacter},
 		},
 		"empty": {
 			solution: "",
 			guess:    "",
-			fb:       feedback{},
+			fb:       Feedback{},
 		},
 	}
 	for name, tc := range tt {

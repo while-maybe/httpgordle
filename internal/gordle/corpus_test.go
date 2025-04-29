@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestReadCorpus(t *testing.T) {
+func TestParseCorpus(t *testing.T) {
 	tt := map[string]struct {
 		file   string
 		length int
@@ -19,7 +19,7 @@ func TestReadCorpus(t *testing.T) {
 		"empty corpus": {
 			file:   "./corpus/empty.txt",
 			length: 0,
-			err:    gordle.ErrCorpusIsEmpty,
+			err:    gordle.ErrEmptyCorpus,
 		},
 	}
 

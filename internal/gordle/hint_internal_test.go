@@ -4,39 +4,39 @@ import "testing"
 
 func TestFeedbackString(t *testing.T) {
 	tt := map[string]struct {
-		feedback feedback
+		feedback Feedback
 		want     string
 	}{
 		"one hint absentCharacter": {
-			feedback: feedback{absentCharacter},
+			feedback: Feedback{absentCharacter},
 			want:     "⬜️",
 		},
 		"one hint wrongPosition": {
-			feedback: feedback{wrongPosition},
+			feedback: Feedback{wrongPosition},
 			want:     "🟡",
 		},
 		"one hint correctPosition": {
-			feedback: feedback{correctPosition},
+			feedback: Feedback{correctPosition},
 			want:     "💚",
 		},
 		"shouldn't be here": {
-			feedback: feedback{101},
+			feedback: Feedback{101},
 			want:     "💔",
 		},
 		"two hints": {
-			feedback: feedback{wrongPosition, correctPosition},
+			feedback: Feedback{wrongPosition, correctPosition},
 			want:     "🟡💚",
 		},
 		"three hints": {
-			feedback: feedback{correctPosition, absentCharacter, wrongPosition},
+			feedback: Feedback{correctPosition, absentCharacter, wrongPosition},
 			want:     "💚⬜️🟡",
 		},
 		"four hints": {
-			feedback: feedback{correctPosition, absentCharacter, correctPosition, wrongPosition},
+			feedback: Feedback{correctPosition, absentCharacter, correctPosition, wrongPosition},
 			want:     "💚⬜️💚🟡",
 		},
 		"five hints": {
-			feedback: feedback{100, wrongPosition, 120, wrongPosition, correctPosition},
+			feedback: Feedback{100, wrongPosition, 120, wrongPosition, correctPosition},
 			want:     "💔🟡💔🟡💚",
 		},
 	}
