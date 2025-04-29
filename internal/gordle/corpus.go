@@ -1,6 +1,7 @@
 package gordle
 
 import (
+	_ "embed"
 	"fmt"
 	"math/rand/v2"
 	"os"
@@ -8,6 +9,9 @@ import (
 )
 
 const ErrEmptyCorpus = corpusError("corpus is empty")
+
+//go:embed corpus/english.txt
+var corpus string
 
 // ReadCorpus reads the file located at the given path and returns a list of words.
 func ReadCorpus(path string) ([]string, error) {

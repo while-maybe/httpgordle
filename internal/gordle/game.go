@@ -1,87 +1,50 @@
 package gordle
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"os"
-	"slices"
 	"strings"
 )
 
 // Game holds all the information we need to play a game of gordle.
 type Game struct {
-	reader      *bufio.Reader
-	solution    []rune
-	maxAttempts int
+	solution []rune
 }
 
 // New returns a game variable, which can be used to Play!
-func New(reader io.Reader, corpus []string, maxAttempts int) (*Game, error) {
+func New(solution string) (*Game, error) {
 
 	if len(corpus) == 0 {
 		return nil, ErrEmptyCorpus
 	}
 
-	g := &Game{
-		reader:      bufio.NewReader(reader),
-		solution:    []rune(strings.ToUpper(pickWord(corpus))), // picks a random word from the corpus
-		maxAttempts: maxAttempts,
-	}
+	return &Game{
+		solution: splitToUppercaseCharacters(solution),
+	}, nil
 
-	return g, nil
 }
 
 // Play runs the game.
-func (g *Game) Play() {
-	fmt.Println("Welcome to Gordle!")
+func (g *Game) Play(guess string) (Feedback, error) {
+	err := g.validateGuess(guess)
 
-	for currentAttempt := 1; currentAttempt <= g.maxAttempts; currentAttempt++ {
-
-		// ask for a valid word
-		guess := g.ask()
-
-		// give user some feedback on current attempt
-		feedback := computeFeedback(guess, g.solution)
-		fmt.Println(feedback.String())
-
-		if slices.Equal(guess, g.solution) {
-			fmt.Printf("🎉 You won! you found it in %d guess(es)! The word was: %s\n", currentAttempt, string(g.solution))
-			return
-		}
+	if err != nil {
+		return Feedback{}, fmt.Errorf("this guess is not the correct length: %w", err)
 	}
-	fmt.Printf("😞 You've lost! The solution was: %s. \n", string(g.solution))
-}
 
-// ask reads input until a valid suggestion is made (and returned).
-func (g *Game) ask() []rune {
-	fmt.Printf("Enter a %d-digit character guess:\n", len(g.solution))
+	characters := splitToUppercaseCharacters(guess)
+	feedback := computeFeedback(characters, g.solution)
 
-	for {
-		playerInput, _, err := g.reader.ReadLine()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Gordle failed to read your guess: %s\n", err.Error())
-			continue
-		}
-
-		guess := splitToUppercaseCharacters(string(playerInput))
-
-		err = g.validateGuess(guess)
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Your attempt is invalid with Gordle's solution: %s.\n", err.Error())
-		} else {
-			return guess
-		}
-	}
+	return feedback, nil
 }
 
 // ErrInvalidGuessLength is returned when the guess has the wrong number of characters.
 const ErrInvalidGuessLength = GameError("invalid guess length")
 
 // validateGuess ensures the guess is valid enough.
-func (g *Game) validateGuess(guess []rune) error {
+func (g *Game) validateGuess(guess string) error {
 	if len(guess) != len(g.solution) {
-		return fmt.Errorf("expected %d, got %d, %w", len(g.solution), len(guess), ErrInvalidGuessLength)
+		return fmt.Errorf("expected solution with %d characters, got %d, %w", len(g.solution), len(guess), ErrInvalidGuessLength)
 	}
 	return nil
 }
