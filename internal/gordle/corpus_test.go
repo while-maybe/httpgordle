@@ -1,7 +1,7 @@
 package gordle_test
 
 import (
-	"gordle/gordle"
+	"httpgordle/internal/gordle"
 	"testing"
 )
 

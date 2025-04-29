@@ -7,3 +7,11 @@ type corpusError string
 func (e corpusError) Error() string {
 	return string(e)
 }
+
+// GameError defines an error that happens during a game.
+type GameError string
+
+// Error is the implementation of the error interface by GameError
+func (e GameError) Error() string {
+	return string(e)
+}
