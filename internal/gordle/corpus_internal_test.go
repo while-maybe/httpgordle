@@ -15,7 +15,7 @@ func inCorpus(corpus []string, word string) bool {
 
 func TestPickWord(t *testing.T) {
 	corpus := []string{"HELLO", "SALUT", "ПРИВЕТ", "ΧΑΙΡΕ"}
-	word := pickWord(corpus)
+	word := PickRandomWord(corpus)
 
 	if !inCorpus(corpus, word) {
 		t.Errorf("expected a word in the corpus, got %q", word)

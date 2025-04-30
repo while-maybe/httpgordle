@@ -31,7 +31,7 @@ func ReadCorpus(path string) ([]string, error) {
 }
 
 // pickWord returns a random word from the corpus
-func pickWord(corpus []string) string {
+func PickRandomWord(corpus []string) string {
 	index := rand.IntN(len(corpus))
 
 	return corpus[index]
