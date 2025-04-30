@@ -2,10 +2,14 @@ package newgame
 
 import (
 	"encoding/json"
+	"fmt"
 	"httpgordle/internal/api"
+	"httpgordle/internal/gordle"
 	"httpgordle/internal/session"
 	"log"
 	"net/http"
+
+	"github.com/oklog/ulid/v2"
 )
 
 type gameAdder interface {
@@ -15,7 +19,7 @@ type gameAdder interface {
 // Handler returns the handler for the game creation endpoint.
 func Handler(adder gameAdder) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
-		game, err := CreateGame(adder)
+		game, err := createGame(adder)
 
 		if err != nil {
 			log.Printf("unable to create a new game: %s", err)
@@ -35,6 +39,37 @@ func Handler(adder gameAdder) http.HandlerFunc {
 	}
 }
 
-func CreateGame(adder gameAdder) (session.Game, error) {
-	return session.Game{}, nil
+const maxAttempts = 5
+
+func createGame(db gameAdder) (session.Game, error) {
+	corpus, err := gordle.ReadCorpus("corpus/english.txt") // should come from config
+	if err != nil {
+		return session.Game{}, fmt.Errorf("unable to read corpus: %w", err)
+	}
+
+	if len(corpus) == 0 {
+		return session.Game{}, gordle.ErrEmptyCorpus
+	}
+
+	solution := gordle.PickRandomWord(corpus)
+
+	game, err := gordle.New(solution)
+	if err != nil {
+		return session.Game{}, fmt.Errorf("failed to create a new Gordle game")
+	}
+
+	g := session.Game{
+		ID:           session.GameID(ulid.Make().String()),
+		Gordle:       *game,
+		AttemptsLeft: maxAttempts,
+		Guesses:      []session.Guess{},
+		Status:       session.StatusPlaying,
+	}
+
+	err = db.Add(g)
+	if err != nil {
+		return session.Game{}, fmt.Errorf("failed to save the new game")
+	}
+
+	return g, nil
 }
