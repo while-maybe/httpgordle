@@ -19,7 +19,9 @@ type gameAdder interface {
 // Handler returns the handler for the game creation endpoint.
 func Handler(adder gameAdder) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
-		game, err := createGame(adder)
+		corpusPath := "corpus/english.txt"
+
+		game, err := createGame(adder, corpusPath)
 
 		if err != nil {
 			log.Printf("unable to create a new game: %s", err)
@@ -41,8 +43,8 @@ func Handler(adder gameAdder) http.HandlerFunc {
 
 const maxAttempts = 5
 
-func createGame(db gameAdder) (session.Game, error) {
-	corpus, err := gordle.ReadCorpus("corpus/english.txt") // should come from config
+func createGame(db gameAdder, corpusPath string) (session.Game, error) {
+	corpus, err := gordle.ReadCorpus(corpusPath) // should come from config
 	if err != nil {
 		return session.Game{}, fmt.Errorf("unable to read corpus: %w", err)
 	}
@@ -51,9 +53,7 @@ func createGame(db gameAdder) (session.Game, error) {
 		return session.Game{}, gordle.ErrEmptyCorpus
 	}
 
-	solution := gordle.PickRandomWord(corpus)
-
-	game, err := gordle.New(solution)
+	game, err := gordle.New(corpus)
 	if err != nil {
 		return session.Game{}, fmt.Errorf("failed to create a new Gordle game")
 	}
