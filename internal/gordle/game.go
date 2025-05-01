@@ -12,17 +12,20 @@ type Game struct {
 }
 
 // New returns a game variable, which can be used to Play!
-func New(solution string) (*Game, error) {
+func New(corpus []string) (*Game, error) {
 
-	if len(englishCorpus) == 0 {
+	if len(corpus) == 0 {
 		return nil, ErrEmptyCorpus
 	}
 
 	return &Game{
-		solution: splitToUppercaseCharacters(solution),
+		solution: splitToUppercaseCharacters(pickRandomWord(corpus)),
 	}, nil
 
 }
+
+// ErrInvalidGuessLength is returned when the guess has the wrong number of characters.
+const ErrInvalidGuessLength = GameError("invalid guess length")
 
 // Play runs the game.
 func (g *Game) Play(guess string) (Feedback, error) {
@@ -38,15 +41,17 @@ func (g *Game) Play(guess string) (Feedback, error) {
 	return feedback, nil
 }
 
-// ErrInvalidGuessLength is returned when the guess has the wrong number of characters.
-const ErrInvalidGuessLength = GameError("invalid guess length")
-
 // validateGuess ensures the guess is valid enough.
 func (g *Game) validateGuess(guess string) error {
 	if len(guess) != len(g.solution) {
 		return fmt.Errorf("expected solution with %d characters, got %d, %w", len(g.solution), len(guess), ErrInvalidGuessLength)
 	}
 	return nil
+}
+
+// ShowAnswer gives up on playing this game. It returns the solution.
+func (g *Game) ShowAnswer() string {
+	return string(g.solution)
 }
 
 // splitToUppercaseCharacters is a naive implementation to turn a string into a list of characters.
