@@ -18,8 +18,9 @@ var wordMap = make(map[string][]string)
 
 // ReadCorpus reads the file located at the given path and returns a list of words.
 func ReadCorpus(path string) ([]string, error) {
-	if wordMap[path] != nil {
-		return wordMap[path], nil
+	words, ok := wordMap[path]
+	if ok {
+		return words, nil
 	}
 
 	log.Printf("Reading words from %s", path)
@@ -29,14 +30,15 @@ func ReadCorpus(path string) ([]string, error) {
 	}
 
 	// we expect the corpus to be a line or space-separated list of words
-	wordMap[path] = strings.Fields(string(data))
-	// words = strings.Fields(string(data))
+	words = strings.Fields(string(data))
 
-	if len(wordMap[path]) == 0 {
+	wordMap[path] = words
+
+	if len(words) == 0 {
 		return nil, ErrEmptyCorpus
 	}
 
-	return wordMap[path], nil
+	return words, nil
 }
 
 // pickWord returns a random word from the corpus
