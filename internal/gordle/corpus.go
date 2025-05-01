@@ -14,28 +14,29 @@ const (
 	ErrInaccessibleCorpus = corpusError("corpus can't be opened")
 )
 
-var words []string
+var wordMap = make(map[string][]string)
 
 // ReadCorpus reads the file located at the given path and returns a list of words.
 func ReadCorpus(path string) ([]string, error) {
-	if words != nil {
-		return words, nil
+	if wordMap[path] != nil {
+		return wordMap[path], nil
 	}
 
-	log.Printf("Opening %s", path)
+	log.Printf("Reading words from %s", path)
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("unable to open %q for reading (%s): %w", path, err, ErrInaccessibleCorpus)
 	}
 
 	// we expect the corpus to be a line or space-separated list of words
-	words = strings.Fields(string(data))
+	wordMap[path] = strings.Fields(string(data))
+	// words = strings.Fields(string(data))
 
-	if len(words) == 0 {
+	if len(wordMap[path]) == 0 {
 		return nil, ErrEmptyCorpus
 	}
 
-	return words, nil
+	return wordMap[path], nil
 }
 
 // pickWord returns a random word from the corpus

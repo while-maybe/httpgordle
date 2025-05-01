@@ -5,19 +5,21 @@ import (
 	"testing"
 )
 
-func TestParseCorpus(t *testing.T) {
+const relativePath = "./../.."
+
+func TestReadCorpus(t *testing.T) {
 	tt := map[string]struct {
 		file   string
 		length int
 		err    error
 	}{
 		"English corpus": {
-			file:   "./corpus/english.txt",
+			file:   relativePath + "/corpus/english.txt",
 			length: 34,
 			err:    nil,
 		},
 		"empty corpus": {
-			file:   "./corpus/empty.txt",
+			file:   relativePath + "/corpus/empty.txt",
 			length: 0,
 			err:    gordle.ErrEmptyCorpus,
 		},
