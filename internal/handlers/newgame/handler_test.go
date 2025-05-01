@@ -2,6 +2,7 @@ package newgame
 
 import (
 	"httpgordle/internal/api"
+	"httpgordle/internal/gordle"
 	"httpgordle/internal/session"
 	"net/http"
 	"net/http/httptest"
@@ -37,9 +38,11 @@ func TestHandler(t *testing.T) {
 		},
 	}
 
+	cc := gordle.NewCorpusCache()
+
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := Handler(tc.creator, corpusPath)
+			f := Handler(cc, tc.creator, corpusPath)
 
 			req, err := http.NewRequest(http.MethodPost, api.NewGameRoute, nil)
 			if err != nil {
@@ -71,9 +74,10 @@ func TestHandler(t *testing.T) {
 }
 
 func Test_createGame(t *testing.T) {
+	cc := gordle.NewCorpusCache()
 	corpusPath := "testdata/corpus.txt"
 
-	g, err := createGame(gameCreatorStub{nil}, corpusPath)
+	g, err := createGame(cc, gameCreatorStub{nil}, corpusPath)
 	require.NoError(t, err)
 
 	assert.Regexp(t, "[A-Z0-9]+", g.ID)

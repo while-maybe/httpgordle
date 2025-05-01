@@ -25,9 +25,11 @@ func TestReadCorpus(t *testing.T) {
 		},
 	}
 
+	cc := gordle.NewCorpusCache()
+
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
-			words, err := gordle.ReadCorpus(tc.file)
+			words, err := gordle.ReadCorpus(cc, tc.file)
 			if tc.err != err {
 				t.Errorf("expected err %v, got%v", tc.err, err)
 			}
