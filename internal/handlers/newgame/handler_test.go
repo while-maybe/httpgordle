@@ -23,6 +23,7 @@ func (g gameCreatorStub) Add(_ session.Game) error {
 
 func TestHandler(t *testing.T) {
 	idFinderRegExp := regexp.MustCompile(`.+"id":"([0-9A-Z]+)".+`)
+	corpusPath := "./../../../corpus/english.txt"
 
 	tt := map[string]struct {
 		wantStatusCode int
@@ -38,7 +39,7 @@ func TestHandler(t *testing.T) {
 
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := Handler(tc.creator)
+			f := Handler(tc.creator, corpusPath)
 
 			req, err := http.NewRequest(http.MethodPost, api.NewGameRoute, nil)
 			if err != nil {

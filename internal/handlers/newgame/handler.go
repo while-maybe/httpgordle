@@ -17,9 +17,8 @@ type gameAdder interface {
 }
 
 // Handler returns the handler for the game creation endpoint.
-func Handler(adder gameAdder) http.HandlerFunc {
+func Handler(adder gameAdder, corpusPath string) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
-		corpusPath := "corpus/english.txt"
 
 		game, err := createGame(adder, corpusPath)
 
