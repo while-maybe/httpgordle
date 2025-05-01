@@ -33,7 +33,7 @@ func TestGameValidateGuess(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			// only the validateGuess is being tested so New take nil/0 args
 			// g := New(nil, "XXXXX", 0)
-			g, _ := New("XXXXX")
+			g, _ := New([]string{"XXXXX"})
 
 			err := g.validateGuess(tc.word)
 			if !errors.Is(err, tc.want) {
