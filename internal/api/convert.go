@@ -9,6 +9,7 @@ func ToGameResponse(g session.Game) GameResponse {
 		AttemptsLeft: g.AttemptsLeft,
 		Guesses:      make([]Guess, len(g.Guesses)),
 		Status:       string(g.Status),
+		WordLength:   g.AttemptsLeft - 1,
 		// TODO word length
 	}
 
