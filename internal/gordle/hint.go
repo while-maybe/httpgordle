@@ -57,3 +57,13 @@ func (fb Feedback) String() string {
 	}
 	return sb.String()
 }
+
+// GameWon returns true if the player won the game
+func (fb Feedback) GameWon() bool {
+	for _, c := range fb {
+		if c != correctPosition {
+			return false
+		}
+	}
+	return true
+}
